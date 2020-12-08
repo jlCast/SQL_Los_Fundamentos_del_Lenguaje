@@ -154,24 +154,104 @@ SELECT * FROM V_Habitaciones;
 --Eliminamos la vista creada
 DROP VIEW V_Habitaciones;
 -- ÍNDICES
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+CREATE INDEX I1_Tipohabitacion ON Habitaciones(TipoHabitacion);
+CREATE INDEX I2_TipoHotel ON Habitaciones (TipoHabitacion,Hotel);
+CREATE INDEX I3_NumHabitacion ON Habitaciones (NumHabitacion DESC);--Búsqueda en modo descendente
+--Eliminar índices
+DROP INDEX I1_Tipohabitacion;
+DROP INDEX I3_NumHabitacion;
+--PRIMAY KEY
+DROP TABLE Habitaciones;
+--Con una columna
+CREATE TABLE Habitaciones(
+    idHabitaciones      INT PRIMARY KEY,
+    Hotel               INT,
+    TipoHabitacion      INT,
+    NumHabitacion       INT,
+    Comentario          VARCHAR(255)
+);
+DROP TABLE Habitaciones;
+--Con varias columnas
+CREATE TABLE Habitaciones(
+    idHabitaciones      INT,
+    Hotel               INT,
+    TipoHabitacion      INT,
+    NumHabitacion       INT,
+    Comentario          VARCHAR(255),
+    CONSTRAINT pk_Habitaciones PRIMARY KEY(Hotel,NumHabitacion)
+);
+--Añadir restricciones a una tabla ya creada
+ALTER TABLE Tarifas ADD CONSTRAINT pk_Tarifas PRIMARY KEY (IdTarifa,Hotel);
+ALTER TABLE TipoHabitacion ADD CONSTRAINT pk_TipoHabitacion PRIMARY KEY (IdTipoHabitaciones);
+--Creación de las tablas con restricciones primaria y ajena
+DROP TABLE Habitaciones;
+CREATE TABLE Habitaciones(
+    idHabitaciones      INT PRIMARY KEY,
+    Hotel               INT,
+    TipoHabitacion      INT,
+    NumHabitacion       INT,
+    Comentario          VARCHAR(255),
+    Vista               VARCHAR (2),
+    CONSTRAINT fk_TipoHabitacion FOREIGN KEY(TipoHabitacion) REFERENCES
+    TipoHabitacion (idTipoHabitaciones) ON DELETE SET NULL
+);
+--VALORES POR DEFECTO
+DROP TABLE Habitaciones;
+--Al crear la tabla
+CREATE TABLE Habitaciones(
+    idHabitaciones      INT PRIMARY KEY,
+    Hotel               INT,
+    TipoHabitacion      INT DEFAULT 2,
+    NumHabitacion       INT,
+    Comentario          VARCHAR(255),
+    Vista               VARCHAR (2),
+    CONSTRAINT fk_TipoHabitacion FOREIGN KEY(TipoHabitacion) REFERENCES
+    TipoHabitacion (idTipoHabitaciones) ON DELETE SET NULL
+);
+--Modificándola
+ALTER TABLE Habitaciones DROP (Vista);
+ALTER TABLE Habitaciones ADD (Vista VARCHAR(20) DEFAULT 'Mar');
+--VALOR NULL
+INSERT INTO Habitaciones(idHabitaciones,Hotel,TipoHabitacion,NumHabitacion,Comentario)
+VALUES (1,1,1,1,'Vistas al mar');
+INSERT INTO Habitaciones(idHabitaciones,Hotel,TipoHabitacion,NumHabitacion,Comentario)
+VALUES (2,1,2,2,' ');
+INSERT INTO Habitaciones(idHabitaciones,Hotel,TipoHabitacion,NumHabitacion)
+VALUES (3,1,3,3);
+INSERT INTO Habitaciones(idHabitaciones,Hotel,TipoHabitacion,NumHabitacion)
+VALUES (4,1,4,4);
+INSERT INTO Habitaciones(idHabitaciones,Hotel,TipoHabitacion,NumHabitacion,Comentario)
+VALUES (5,1,5,5,'Vistas al mar');
+INSERT INTO Habitaciones(idHabitaciones,Hotel,TipoHabitacion,NumHabitacion)
+VALUES (6,1,6,6);
+INSERT INTO Habitaciones(idHabitaciones,Hotel,TipoHabitacion,NumHabitacion,Comentario)
+VALUES (7,1,7,7,'Vistas al mar');
+SELECT * FROM Habitaciones;
+SELECT COUNT(*)FROM Habitaciones WHERE Comentario NOT IN ('Vistas al mar');
+--RESTRICCION UNIQUE
+DROP TABLE Hoteles;
+CREATE TABLE Hoteles(
+    idHotel        INT,
+    Nombre         VARCHAR(50) UNIQUE,
+    Estrella       VARCHAR(5)
+);
+DROP TABLE Hoteles;
+CREATE TABLE Hoteles(
+    idHotel        INT,
+    Nombre         VARCHAR(50),
+    Estrella       VARCHAR(5)
+);
+ALTER TABLE Hoteles MODIFY (NOmbre UNIQUE);
+--RESTRICCIÓN CHECK
+DROP TABLE Habitaciones;
+--Al crear la tabla
+CREATE TABLE Habitaciones(
+    idHabitaciones      INT PRIMARY KEY,
+    Hotel               INT CHECK (VALUE BETWEEN 1 AND 999),
+    TipoHabitacion      CHECK (VALUE IN (SELECT IdTipohabitaciones FROM TipoHabitacion)),
+    NumHabitacion       INT,
+    Comentario          VARCHAR(255),
+    Vista               VARCHAR (2)
+);
 
 
